@@ -124,6 +124,10 @@ UINT StartAccept(void *pParam)
 	return true;
 }
 
+UINT read_from_socket(){
+
+	return 1;
+}
 // Setup chanel and read data from local , send data to remote
 UINT UserToProxyThread( void *pParam)
 {
@@ -192,11 +196,10 @@ UINT UserToProxyThread( void *pParam)
 	::CloseHandle( proxy_param.hUserSvrOK);
 	
 	while ( sockets_pair.is_proxy_server_closed == FALSE && sockets_pair.is_user_proxy_closed == FALSE) {
-
-		// SEND
+			// SEND
 		// printf("\n send server... \n");
 
-		readed_bytes_count = send(sockets_pair.proxy_server, chBuffer, readed_bytes_count, 0);
+		readed_bytes_count = send(sockets_pair.proxy_server, chBuffer, sizeof(chBuffer), 0);
 
 		if ( readed_bytes_count == SOCKET_ERROR) {
 
@@ -212,7 +215,7 @@ UINT UserToProxyThread( void *pParam)
 		}
 
 		// SEND
-		// printf("\n recv client... \n");
+		//printf("\n recv client... \n");
 
 		// RECV
 		readed_bytes_count = recv( sockets_pair.user_proxy, chBuffer, sizeof(chBuffer), 0);
@@ -336,12 +339,11 @@ UINT ProxyToServer(LPVOID pParam)
 	pProxyParam->pSocketsPair->is_proxy_server_closed = FALSE;
 	::SetEvent(pProxyParam->hUserSvrOK);
 
+	char chBuffer[BUFSIZE];
+	int readed_bytes_count;
 
 	while ( !pProxyParam->pSocketsPair->is_proxy_server_closed && !pProxyParam->pSocketsPair->is_user_proxy_closed){
-
-		char chBuffer[BUFSIZE];
-		int readed_bytes_count;
-
+		
 		//printf("\n recv server... \n");
 
 		readed_bytes_count = recv(conn_socket, chBuffer, sizeof(chBuffer), 0);
@@ -366,7 +368,7 @@ UINT ProxyToServer(LPVOID pParam)
 		
 		//printf("\n send to client... \n");
 
-		readed_bytes_count = send(pProxyParam->pSocketsPair->user_proxy, chBuffer, readed_bytes_count, 0);
+		readed_bytes_count = send(pProxyParam->pSocketsPair->user_proxy, chBuffer, sizeof(chBuffer), 0);
 		
 		if (readed_bytes_count == SOCKET_ERROR) {
 			
