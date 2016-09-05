@@ -1,5 +1,5 @@
 ﻿  Proxy.cpp
-  Примечание: включение файла:  c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\stdafx.h
+  Примечание: включение файла:  c:\data\cpp_simple_proxy_forself\stdafx.h
   Примечание: включение файла:   C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\atlmfc\include\afx.h
   Примечание: включение файла:    C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\new.h
   Примечание: включение файла:     C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\corecrt.h
@@ -487,10 +487,5 @@
   Примечание: включение файла:          C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\system_error
   Примечание: включение файла:           C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\include\cerrno
   Примечание: включение файла:          C:\Program Files (x86)\Windows Kits\10\Include\10.0.10240.0\ucrt\share.h
-  Примечание: включение файла:  c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\Proxy.h
-c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\proxy.cpp(115): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\proxy.cpp(120): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\proxy.cpp(130): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\proxy.cpp(133): warning C4018: <: несоответствие типов со знаком и без знака
-c:\users\rinatf\documents\visual studio 2015\projects\consoleapplication_proxy\consoleapplication_proxy\proxy.cpp(143): warning C4018: <: несоответствие типов со знаком и без знака
-  ConsoleApplication_proxy.vcxproj -> c:\users\rinatf\documents\visual studio 2015\Projects\ConsoleApplication_proxy\Debug\ConsoleApplication_proxy.exe
+  Примечание: включение файла:  c:\data\cpp_simple_proxy_forself\Proxy.h
+  ConsoleApplication_proxy.vcxproj -> C:\data\cpp_simple_proxy_forself\Debug\ConsoleApplication_proxy.exe
