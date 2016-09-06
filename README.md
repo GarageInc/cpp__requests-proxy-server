@@ -11,6 +11,6 @@ Example for php:
     
 where "54322" - port in 127.0.0.1, which we will proxy to "5432"(standart PSQL port);
 
-2. Run program with PORT(in code) = 54322(bind)
+2. Run program with PORT(in code) = "54322"(bind) and SQL_PORT "5432" - for proxy to sql.
 
 3. Sniff and proxy all!
