@@ -1,16 +1,13 @@
 //#define _AFXDLL
-// Proxy.cpp is very simple program to implement the HTTP proxy function.
-// To make it short and clear , some error tolerant codes are omitted.
-// Written by HU Zhongshan   
-// e-mail huzhongshan@hotmail.com OR yangjy@mail.njust.edu.cn
-// 1999-4-18
 
 #include "stdafx.h"
 #include "Proxy.h"
+
 #include <winsock2.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
+
+#include <fstream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -18,21 +15,14 @@
 static char THIS_FILE[] = __FILE__;
 #endif
 
-/////////////////////////////////////////////////////////////////////////////
-// The one and only application object
-
-#define HTTP  "http://"
-
 #define PROXYPORT    54322    //Proxy Listen Port
 #define BUFSIZE   10240      //chBuffer size
 
-#define SQL_ADDRESS "127.0.0.1" 
-#define SQL_PORT 5432
+#define REMOTE_SERVER_ADDRESS "127.0.0.1" 
+#define REMOTE_SERVER_PORT 5432
 
-CWinApp theApp;
 
-using namespace std;
-
+void trace(char*buffer, int size);
 UINT ProxyToServer(LPVOID pParam);
 UINT UserToProxyThread(void *pParam);
 UINT StartAccept(void *pParam);
@@ -53,6 +43,20 @@ struct ProxyParam {
 };                   //This struct is used to exchange information between threads.
 
 SOCKET    gListen_Socket;
+
+void trace(char*buffer, int size) {
+
+	printf("\n");
+
+	for (int i = 0; i < size; i++) {
+		if (buffer[i] >= 32 && buffer[i] <= 127 || buffer[i] == '\n')
+			printf("%c", buffer[i]);
+		else
+			printf(" ");		
+	}
+	
+	printf("\n");
+}
 
 int StartServer()
 {
@@ -173,10 +177,10 @@ UINT UserToProxyThread( void *pParam)
 
 
 #ifdef _DEBUG
-
 	chBuffer[readed_bytes_count] = 0;
-	printf("\nReceived %d bytes,data\n[%s]\nfrom client\n", readed_bytes_count, chBuffer);
+	printf("\nReceived %d bytes from client\n", readed_bytes_count, chBuffer);
 #endif
+	trace(chBuffer, readed_bytes_count);
 
 	// Connection with 
 	ProxyParam proxy_param;
@@ -184,8 +188,8 @@ UINT UserToProxyThread( void *pParam)
 	proxy_param.pSocketsPair = &sockets_pair;
 	proxy_param.hUserSvrOK = CreateEvent(NULL, true, false, NULL);
 
-	proxy_param.chAddress = SQL_ADDRESS;
-	proxy_param.iPort = SQL_PORT;
+	proxy_param.chAddress = REMOTE_SERVER_ADDRESS;
+	proxy_param.iPort = REMOTE_SERVER_PORT;
 
 	CWinThread *pChildThread = AfxBeginThread(ProxyToServer, (LPVOID)&proxy_param);
 	::WaitForSingleObject( proxy_param.hUserSvrOK, 60000);  //Wait for connection between proxy and remote server
@@ -193,9 +197,11 @@ UINT UserToProxyThread( void *pParam)
 
 	int sended_bytes_count;
 
+
+
 	while ( sockets_pair.is_proxy_server_closed == false && sockets_pair.is_user_proxy_closed == false) {		
 
-		printf("%d - %d\n", sockets_pair.is_proxy_server_closed, sockets_pair.is_user_proxy_closed); // prints 1
+		// printf("%d - %d\n", sockets_pair.is_proxy_server_closed, sockets_pair.is_user_proxy_closed); // prints 1
 		sended_bytes_count = send(sockets_pair.proxy_server, chBuffer, readed_bytes_count, 0);
 
 		if ( sended_bytes_count == SOCKET_ERROR) {
@@ -241,10 +247,11 @@ UINT UserToProxyThread( void *pParam)
 			}
 			else {
 
-				chBuffer[readed_bytes_count] = 0;
 #ifdef _DEBUG
-				printf("\nReceived %d bytes from client \n[%s]\n", readed_bytes_count, chBuffer);
+				chBuffer[readed_bytes_count] = 0;
+				printf("\nReceived %d bytes from client\n", readed_bytes_count, chBuffer);				
 #endif
+				trace(chBuffer, readed_bytes_count);
 			}
 
 		}
@@ -263,6 +270,7 @@ UINT UserToProxyThread( void *pParam)
 	}
 
 	::WaitForSingleObject( pChildThread->m_hThread, 20000);  //Should check the reture value
+
 
 	return 0;
 }
@@ -338,9 +346,10 @@ UINT ProxyToServer(LPVOID pParam)
 	char chBuffer[ BUFSIZE + 1];
 	int readed_bytes_count, sended_bytes_count;
 
+
 	while ( pProxyParam->pSocketsPair->is_proxy_server_closed == false && pProxyParam->pSocketsPair->is_user_proxy_closed == false){
 
-		printf("server: %d - %d\n", pProxyParam->pSocketsPair->is_proxy_server_closed, pProxyParam->pSocketsPair->is_user_proxy_closed); // prints 1
+		// ("server: %d - %d\n", pProxyParam->pSocketsPair->is_proxy_server_closed, pProxyParam->pSocketsPair->is_user_proxy_closed); // prints 1
 		readed_bytes_count = recv(pProxyParam->pSocketsPair->proxy_server, chBuffer, BUFSIZE, 0);
 		
 		if ( readed_bytes_count == SOCKET_ERROR) {
@@ -359,12 +368,12 @@ UINT ProxyToServer(LPVOID pParam)
 			break;
 		}
 		else {
-
-			chBuffer[ readed_bytes_count] = 0;
-
+			
 #ifdef _DEBUG	
-			printf("\nReceived %d bytes from server \n[%s]\n", readed_bytes_count, chBuffer);
+			chBuffer[readed_bytes_count] = 0;
+			printf("\nReceived %d bytes from server\n", readed_bytes_count, chBuffer);
 #endif
+			trace(chBuffer, readed_bytes_count);
 
 			sended_bytes_count = send( pProxyParam->pSocketsPair->user_proxy, chBuffer, readed_bytes_count, 0);
 
@@ -392,7 +401,8 @@ UINT ProxyToServer(LPVOID pParam)
 		closesocket( pProxyParam->pSocketsPair->user_proxy);
 		pProxyParam->pSocketsPair->is_user_proxy_closed = true;
 	}
-	
+
+
 	return 1;
 }
 
@@ -404,7 +414,7 @@ int _tmain(int argc, TCHAR* argv[], TCHAR* envp[]){
 
 	if (!AfxWinInit(::GetModuleHandle(NULL), NULL, ::GetCommandLine(), 0))
 	{
-		cerr << _T("\nFatal Error: MFC initialization failed") << endl;
+		std::cerr << _T("\nFatal Error: MFC initialization failed") << std::endl;
 		nRetCode = 1;
 	}
 	else
