@@ -23,7 +23,7 @@ static char THIS_FILE[] = __FILE__;
 
 #define HTTP  "http://"
 
-#define PROXYPORT    54321    //Proxy Listen Port
+#define PROXYPORT    54322    //Proxy Listen Port
 #define BUFSIZE   10240      //chBuffer size
 
 #define SQL_ADDRESS "127.0.0.1" 
